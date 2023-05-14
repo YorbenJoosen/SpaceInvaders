@@ -10,22 +10,6 @@ import Visualisation.Player.Java2DPlayerShip;
 
 public class Java2DFactory extends AbstractFactory {
     static GraphicsContext graphicsContext = new GraphicsContext();
-    /*@Override
-    public PlayerShip createPlayerShip(double xPosition, double yPosition) {
-        return new Java2DPlayerShip(xPosition, yPosition, graphicsContext);
-    }
-    @Override
-    public Java2DEnemyShip createEnemyShip(double xPosition, double yPosition) {
-        return new Java2DEnemyShip(xPosition, yPosition, graphicsContext);
-    }
-    @Override
-    public Java2DPlayerBullet createPlayerBullet(double xPosition, double yPosition) {
-        return new Java2DPlayerBullet(xPosition, yPosition, graphicsContext);
-    }
-    @Override
-    public Java2DEnemyBullet createEnemyBullet(double xPosition, double yPosition) {
-        return new Java2DEnemyBullet(xPosition, yPosition, graphicsContext);
-    }*/
     @Override
     public PlayerShip createPlayerShip(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection) {
         return new Java2DPlayerShip(xSpeed, ySpeed, xPosition, yPosition, xDirection, yDirection, graphicsContext);

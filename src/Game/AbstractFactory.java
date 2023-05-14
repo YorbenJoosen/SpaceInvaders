@@ -6,10 +6,6 @@ import Game.Player.PlayerBullet;
 import Game.Player.PlayerShip;
 
 public abstract class AbstractFactory {
-    /*public abstract PlayerShip createPlayerShip(double xPosition, double yPosition);
-    public abstract EnemyShip createEnemyShip(double xPosition, double yPosition);
-    public abstract PlayerBullet createPlayerBullet(double xPosition, double yPosition);
-    public abstract EnemyBullet createEnemyBullet(double xPosition, double yPosition);*/
     public abstract PlayerShip createPlayerShip(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection);
     public abstract EnemyShip createEnemyShip(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection);
     public abstract PlayerBullet createPlayerBullet(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection);

@@ -6,8 +6,4 @@ public abstract class PlayerBullet extends PlayerEntity {
     public PlayerBullet(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection) {
         setMovementComponent(new MovementComponent(xSpeed, ySpeed, xPosition, yPosition, xDirection, yDirection));
     }
-    /*public PlayerBullet(double xPosition, double yPosition) {
-        setxPosition(xPosition);
-        setyPosition(yPosition);
-    }*/
 }

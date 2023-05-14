@@ -9,11 +9,6 @@ public abstract class PlayerShip extends PlayerEntity {
         setMovementComponent(new MovementComponent(xSpeed, ySpeed, xPosition, yPosition, xDirection, yDirection));
         this.lives = 3;
     }
-    /*public PlayerShip() {
-        setxPosition(xPosition);
-        setyPosition(yPosition);
-        this.lives = 3;
-    }*/
     public void update(Input.InputTypes input, int gameCellsX) {
         double xPosition = getMovementComponent().getxPosition();
         if (input == Input.InputTypes.LEFT && xPosition != 0) {

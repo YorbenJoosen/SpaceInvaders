@@ -5,7 +5,7 @@ public class Timer {
     private int preferredUPS;
     private int actualFPS = 0;
     private int actualUPS = 0;
-    private float delta;
+    private float timeDelta;
     private long lastUpdateTime;
     private long lastRenderTime;
     private long updateTimeElapsed;
@@ -22,7 +22,7 @@ public class Timer {
         long now = System.nanoTime();
         updateTimeElapsed = now  - lastUpdateTime;
         renderTimeElapsed = now  - lastRenderTime;
-        delta = (float) (updateTimeElapsed / 1e9);
+        timeDelta = (float) (updateTimeElapsed / 1e9);
     }
     public boolean updateGame(boolean isPaused) {
         boolean doUpdate = updateTimeElapsed >= 1e9 / preferredUPS;
@@ -51,8 +51,8 @@ public class Timer {
         this.preferredUPS = preferredUPS;
     }
 
-    public float getDelta() {
-        return delta;
+    public float getTimeDelta() {
+        return timeDelta;
     }
 
     public int getActualFPS() {

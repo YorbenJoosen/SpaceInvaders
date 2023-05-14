@@ -11,13 +11,6 @@ public class Java2DPlayerShip extends PlayerShip {
     private final BufferedImage playerHealth;
     private final Graphics2D graphics2D;
     private final int size;
-    /*public Java2DPlayerShip(double xPosition, double yPosition, GraphicsContext graphicsContext) {
-        //super(xPosition, yPosition);
-        this.graphics2D = graphicsContext.getG2d();
-        this.size = graphicsContext.getSize();
-        this.playerShip = graphicsContext.spriteSheet.getSubimage(4*size, 2*size, size, size);
-        this.playerHealth = graphicsContext.heart;
-    }*/
     public Java2DPlayerShip(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection, GraphicsContext graphicsContext) {
         super(xSpeed, ySpeed, xPosition, yPosition, xDirection, yDirection);
         this.graphics2D = graphicsContext.getG2d();
