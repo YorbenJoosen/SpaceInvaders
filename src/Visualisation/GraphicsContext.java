@@ -15,8 +15,8 @@ public class GraphicsContext {
     private BufferedImage g2dimage;     // used for drawing
     private Graphics2D g2d;             // always draw in this one
     private int size;                   // cell size
-    private int sizeX = 50; // Size of entities in pixels
-    private int sizeY = 50; // Size of entities in pixels
+    private final int sizeX = 50; // Size of entities in pixels
+    private final int sizeY = 50; // Size of entities in pixels
     public BufferedImage spriteSheet;
     public BufferedImage background;
     public BufferedImage heart;
@@ -86,6 +86,7 @@ public class GraphicsContext {
 
     public void setGameDimensions(int GameCellsX, int GameCellsY) {
         size = (int) Math.min(ScreenWidth/GameCellsX, ScreenHeight/GameCellsY);
+
         frame.setLocation(0,0);
         frame.setSize((int) ScreenWidth, (int) ScreenHeight);
         loadImages();
@@ -97,8 +98,8 @@ public class GraphicsContext {
             playerBullet = resizeImage(playerBullet, size/3, size/2);
             /*spriteSheet = resizeImage(spriteSheet, 9 * sizeX, 3 * sizeY);
             spriteSheet2 = resizeImage(spriteSheet2, 9 * sizeX, 3 * sizeY);
-            heart = resizeImage(heart, sizeX/2, sizeY/2);
-            playerBullet = resizeImage(playerBullet, size/3, size/2);*/
+            heart = resizeImage(heart, sizeX, sizeY);
+            playerBullet = resizeImage(playerBullet, sizeX, sizeY);*/
         } catch(Exception e) {
             e.getStackTrace();
         }
@@ -119,11 +120,11 @@ public class GraphicsContext {
     public int getPixelRatio() {
         return (int) Math.ceil(ScreenWidth/ScreenHeight);
     }
-    public double getCellWidth(int gameCellsX) {
-        return ScreenWidth/gameCellsX*sizeX;
+    public int getSizeX() {
+        return sizeX;
     }
-    public double getCellHeight(int gameCellsY) {
-        return ScreenHeight/gameCellsY*sizeY;
+    public int getSizeY() {
+        return sizeY;
     }
 }
 

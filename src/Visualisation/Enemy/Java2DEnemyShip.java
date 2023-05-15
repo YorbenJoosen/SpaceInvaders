@@ -26,13 +26,13 @@ public class Java2DEnemyShip extends EnemyShip {
         int xPosition = (int) Math.round(getMovementComponent().getxPosition());
         int yPosition = (int) Math.round(getMovementComponent().getyPosition());
         if (yPosition == 1) {
-            graphics2D.drawImage(enemy1, xPosition * size, yPosition * size, null);
+            graphics2D.drawImage(enemy1, xPosition*size, yPosition*size, null);
         }
         else if (yPosition == 2) {
-            graphics2D.drawImage(enemy2, xPosition * size, yPosition * size, null);
+            graphics2D.drawImage(enemy2, xPosition*size, yPosition*size, null);
         }
         else if (yPosition == 3) {
-            graphics2D.drawImage(enemy3, xPosition * size, yPosition * size, null);
+            graphics2D.drawImage(enemy3, xPosition*size, yPosition*size, null);
         }
     }
 }

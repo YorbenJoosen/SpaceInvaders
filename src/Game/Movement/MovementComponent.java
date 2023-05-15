@@ -7,8 +7,6 @@ public class MovementComponent {
     // Position in X and Y direction
     private double xPosition;
     private double yPosition;
-    // Time delta
-    private float timeDelta;
     // Direction
     private int xDirection;
     private int yDirection;
@@ -53,13 +51,6 @@ public class MovementComponent {
         this.yPosition = yPosition;
     }
 
-    public float getTimeDelta() {
-        return timeDelta;
-    }
-
-    public void setTimeDelta(float timeDelta) {
-        this.timeDelta = timeDelta;
-    }
 
     public int getxDirection() {
         return xDirection;
@@ -84,7 +75,6 @@ public class MovementComponent {
                 ", ySpeed=" + ySpeed +
                 ", xPosition=" + xPosition +
                 ", yPosition=" + yPosition +
-                ", timeDelta=" + timeDelta +
                 ", xDirection=" + xDirection +
                 ", yDirection=" + yDirection +
                 '}';

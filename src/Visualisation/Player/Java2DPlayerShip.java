@@ -20,10 +20,10 @@ public class Java2DPlayerShip extends PlayerShip {
     }
     @Override
     public void draw() {
-        graphics2D.drawImage(playerShip, (int) Math.round(getMovementComponent().getxPosition()) * size, (int) Math.round(getMovementComponent().getyPosition()) * size, null);
+        graphics2D.drawImage(playerShip, (int) Math.round(getMovementComponent().getxPosition())*size, (int) Math.round(getMovementComponent().getyPosition())*size, null);
     }
     @Override
     public void drawHealth(int xPosition, int yPosition) {
-        graphics2D.drawImage(playerHealth, xPosition * size / 2, size / 3, null);
+        graphics2D.drawImage(playerHealth, xPosition*size, yPosition*size, null);
     }
 }

@@ -18,6 +18,6 @@ public class Java2DEnemyBullet extends EnemyBullet {
     }
     @Override
     public void draw() {
-        graphics2D.drawImage(image, (int) Math.round(getMovementComponent().getxPosition()) * size, (int) Math.round(getMovementComponent().getyPosition()) *  size, null);
+        graphics2D.drawImage(image, (int) Math.round(getMovementComponent().getxPosition())*size, (int) Math.round(getMovementComponent().getyPosition())*size, null);
     }
 }

@@ -2,9 +2,8 @@ package Game;
 
 import Game.Enemy.EnemyBullet;
 import Game.Enemy.EnemyShip;
-import Game.Helpers.Collision;
 import Game.Helpers.Timer;
-import Game.Movement.MovementComponent;
+import Game.Movement.CollisionSystem;
 import Game.Movement.MovementSystem;
 import Game.Player.PlayerBullet;
 import Game.Player.PlayerShip;
@@ -12,6 +11,8 @@ import Game.Player.PlayerShip;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.Collection;
 
 
 public class Game {
@@ -21,33 +22,39 @@ public class Game {
     private final int gameCellsX;
     private final int gameCellsY;
     private final Input input;
-    private PlayerShip playerShip;
-    private final ArrayList<EnemyShip> enemyShips = new ArrayList<>();
+    private final ArrayList<PlayerShip> playerShips = new ArrayList<>();
     private final ArrayList<PlayerBullet> playerBullets = new ArrayList<>();
     private final ArrayList<EnemyBullet> enemyBullets = new ArrayList<>();
-    private int dx = 1;
-    private int enemyDirection = 1;
-    private MovementSystem movementSystem;
-    private Collision collision;
+    private final ArrayList<EnemyShip> enemyShips = new ArrayList<>();
+    private final MovementSystem movementSystem;
+    private final CollisionSystem collisionSystem;
+    private Timer timer;
+    private int entityWidth;
+    private int entityHeight;
 
     public Game(AbstractFactory abstractFactory) {
         this.abstractFactory = abstractFactory;
-        this.gameCellsY = 10;
-        this.gameCellsX = gameCellsY * abstractFactory.getPixelRatio();
+        this.gameCellsY = 100;
+        this.gameCellsX = 100;
         abstractFactory.setGameDimensions(gameCellsX, gameCellsY);
         this.input = abstractFactory.createInput();
         this.movementSystem = new MovementSystem();
-        this.collision = new Collision(gameCellsX, gameCellsY);
+        collisionSystem = new CollisionSystem(gameCellsX, gameCellsY);
+        this.entityWidth = 4;
+        this.entityHeight = entityWidth/abstractFactory.getPixelRatio();
     }
     public void run() {
         isRunning = true;
         isPaused = false;
-        Timer timer = new Timer(abstractFactory.getRefreshRate(), 25);
         init();
         while (isRunning) {
             timer.updateTimer();
             if (timer.updateGame(isPaused)) {
-                updateAll(timer.getTimeDelta());
+                if (!isPaused) {
+                    updateMovement();
+                    checkCollisions();
+                }
+                updateAll();
             }
             if (timer.updateRender()) {
                 drawAll();
@@ -67,30 +74,47 @@ public class Game {
             }
         }
         // Create player ship
-        playerShip = abstractFactory.createPlayerShip(1, 0, gameCellsX/2, gameCellsY - 1, 0, 0);
+        //TODO check gamemode
+        PlayerShip playerShip = abstractFactory.createPlayerShip(1, 0, gameCellsX/2, gameCellsY - 1, 0, 0);
+        playerShips.add(playerShip);
+        timer = new Timer(abstractFactory.getRefreshRate(), 25);
     }
     public void drawAll() {
-        // Draw player ship
-        playerShip.draw();
-        // Draw enemy ships
-        for (EnemyShip enemyShip: enemyShips) {
-            enemyShip.draw();
+        // Put all the arrays into one array, so they can be drawn in one go
+        ArrayList<Entity> allEntities = Stream.of(enemyShips, enemyBullets, playerBullets, playerShips)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toCollection(ArrayList::new));
+        
+        // Draw all entities
+        for (Entity entity: allEntities) {
+            entity.draw();
         }
-        // Draw player bullets
-        for (PlayerBullet playerBullet: playerBullets) {
-            playerBullet.draw();
-        }
-        // Draw enemy bullets
-        for (EnemyBullet enemyBullet: enemyBullets) {
-            enemyBullet.draw();
-        }
+
+        PlayerShip playerShip = playerShips.get(0);
         for (int i = 0; i < playerShip.getHealth(); i++) {
             playerShip.drawHealth(i, 0);
         }
         abstractFactory.render();
     }
-    public void updateAll(float delta) {
+    public void updateMovement() {
+        // Put all the arrays into one array, so they can get updated in one go
+        ArrayList<Entity> allEntities = Stream.of(enemyShips, enemyBullets, playerBullets)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        // Update the movement components
+        movementSystem.update(allEntities, timer.getTimeDelta());
+    }
+    public void checkCollisions() {
+        collisionSystem.enemyShips(enemyShips);
+        // Needs to be first otherwise bullets will be removed before hitting the player ship
+        collisionSystem.playerShips(enemyBullets, playerShips);
+        collisionSystem.collisionBetweenTwoEntities(playerBullets, enemyShips);
+        collisionSystem.collisionBetweenTwoEntities(enemyBullets, playerBullets);
+    }
+    public void updateAll() {
         int bulletSpeed = 10;
+        PlayerShip playerShip = playerShips.get(0);
 
         if (input.inputAvailable()) {
             Input.InputTypes currentInput = input.getInput();
@@ -101,51 +125,17 @@ public class Game {
                 playerBullets.add(abstractFactory.createPlayerBullet(0, bulletSpeed, playerShip.getMovementComponent().getxPosition(), playerShip.getMovementComponent().getyPosition(), 0, -1));
             }
             else if (!isPaused){
+                double xPosition = playerShip.getMovementComponent().getxPosition();
+                if (currentInput == Input.InputTypes.LEFT && xPosition != 0) {
+                    playerShip.getMovementComponent().setxDirection(-1);
+                }
+                else if (currentInput == Input.InputTypes.RIGHT && xPosition != gameCellsX - 1) {
+                    playerShip.getMovementComponent().setxDirection(1);
+                }
                 playerShip.update(currentInput, gameCellsX);
             }
         }
         if (!isPaused) {
-            // Update enemy ships
-            int xRightSide = gameCellsX - 1;
-
-            for (EnemyShip enemyShip: enemyShips) {
-                // Check if right side is hit
-                if (collision.rightBorderHit(enemyShip.getMovementComponent())) {
-                    enemyDirection = -1;
-                    break;
-                }
-                // Check if left side is hit
-                else if (collision.leftBorderHit(enemyShip.getMovementComponent())) {
-                    enemyDirection = 1;
-                    break;
-                }
-            }
-            // Update time delta and direction
-            for (EnemyShip enemyShip: enemyShips) {
-                enemyShip.getMovementComponent().setTimeDelta(delta);
-                enemyShip.getMovementComponent().setxDirection(enemyDirection);
-            }
-            // Get movementcomponents out of enemy ships
-            ArrayList<MovementComponent> componentList = enemyShips.stream()
-                    .map(EnemyShip::getMovementComponent)
-                    .collect(Collectors.toCollection(ArrayList::new));
-
-            // Update positions
-            movementSystem.update(componentList);
-
-            // Update player bullets
-            collision.playerBullet(playerBullets, enemyShips);
-
-            // Update player bullets
-            for (PlayerBullet playerBullet : playerBullets) {
-                playerBullet.getMovementComponent().setTimeDelta(delta);
-            }
-            ArrayList<MovementComponent> components = playerBullets.stream()
-                    .map(PlayerBullet::getMovementComponent)
-                    .collect(Collectors.toCollection(ArrayList::new));
-
-            movementSystem.update(components);
-
             // Get random enemy ship, this has a 33% chance to be a ship on the front row
             Random random = new Random();
             EnemyShip randomEnemyShip = null;
@@ -170,17 +160,6 @@ public class Game {
                 EnemyBullet enemyBullet =  abstractFactory.createEnemyBullet(0, bulletSpeed, randomEnemyShip.getMovementComponent().getxPosition(), randomEnemyShip.getMovementComponent().getyPosition() +1, 0, 1);
                 enemyBullets.add(enemyBullet);
             }
-            collision.enemyBullet(enemyBullets, playerBullets, playerShip);
-
-
-            for (EnemyBullet enemyBullet : enemyBullets) {
-                enemyBullet.getMovementComponent().setTimeDelta(delta);
-            }
-            ArrayList<MovementComponent> components2 = enemyBullets.stream()
-                    .map(EnemyBullet::getMovementComponent)
-                    .collect(Collectors.toCollection(ArrayList::new));
-
-            movementSystem.update(components2);
         }
     }
 }

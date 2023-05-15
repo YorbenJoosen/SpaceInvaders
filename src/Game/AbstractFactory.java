@@ -16,4 +16,5 @@ public abstract class AbstractFactory {
     public abstract int getRefreshRate();
     public abstract void updateTitle(int fps, int ups);
     public abstract int getPixelRatio();
+
 }
