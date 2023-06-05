@@ -1,5 +1,6 @@
 package Game;
 
+import Game.Enemy.EnemyBoss;
 import Game.Enemy.EnemyBullet;
 import Game.Enemy.EnemyShip;
 import Game.Helpers.Timer;
@@ -26,22 +27,19 @@ public class Game {
     private final ArrayList<PlayerBullet> playerBullets = new ArrayList<>();
     private final ArrayList<EnemyBullet> enemyBullets = new ArrayList<>();
     private final ArrayList<EnemyShip> enemyShips = new ArrayList<>();
+    private final ArrayList<EnemyBoss> enemyBosses = new ArrayList<>();
     private final MovementSystem movementSystem;
     private final CollisionSystem collisionSystem;
     private Timer timer;
-    private int entityWidth;
-    private int entityHeight;
 
     public Game(AbstractFactory abstractFactory) {
         this.abstractFactory = abstractFactory;
-        this.gameCellsY = 100;
-        this.gameCellsX = 100;
+        this.gameCellsY = 10;
+        this.gameCellsX = 20;
         abstractFactory.setGameDimensions(gameCellsX, gameCellsY);
         this.input = abstractFactory.createInput();
         this.movementSystem = new MovementSystem();
         collisionSystem = new CollisionSystem(gameCellsX, gameCellsY);
-        this.entityWidth = 4;
-        this.entityHeight = entityWidth/abstractFactory.getPixelRatio();
     }
     public void run() {
         isRunning = true;
@@ -81,7 +79,7 @@ public class Game {
     }
     public void drawAll() {
         // Put all the arrays into one array, so they can be drawn in one go
-        ArrayList<Entity> allEntities = Stream.of(enemyShips, enemyBullets, playerBullets, playerShips)
+        ArrayList<Entity> allEntities = Stream.of(enemyShips, enemyBullets, playerBullets, playerShips, enemyBosses)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toCollection(ArrayList::new));
         
@@ -97,8 +95,7 @@ public class Game {
         abstractFactory.render();
     }
     public void updateMovement() {
-        // Put all the arrays into one array, so they can get updated in one go
-        ArrayList<Entity> allEntities = Stream.of(enemyShips, enemyBullets, playerBullets)
+        ArrayList<Entity> allEntities = Stream.of(enemyShips, enemyBullets, playerBullets, enemyBosses)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toCollection(ArrayList::new));
 
@@ -106,11 +103,18 @@ public class Game {
         movementSystem.update(allEntities, timer.getTimeDelta());
     }
     public void checkCollisions() {
-        collisionSystem.enemyShips(enemyShips);
-        // Needs to be first otherwise bullets will be removed before hitting the player ship
-        collisionSystem.playerShips(enemyBullets, playerShips);
-        collisionSystem.collisionBetweenTwoEntities(playerBullets, enemyShips);
-        collisionSystem.collisionBetweenTwoEntities(enemyBullets, playerBullets);
+        if (enemyShips.size() != 0) {
+            collisionSystem.enemyShips(enemyShips);
+            collisionSystem.collisionBetweenTwoEntities(playerBullets, enemyShips);
+        }
+        if (enemyBullets.size() != 0) {
+            // Needs to be first otherwise bullets will be removed before hitting the player ship
+            collisionSystem.playerShips(enemyBullets, playerShips);
+            if (playerBullets.size() != 0) {
+                collisionSystem.collisionBetweenTwoEntities(enemyBullets, playerBullets);
+            }
+        }
+        collisionSystem.enemyBosses(enemyBosses);
     }
     public void updateAll() {
         int bulletSpeed = 10;
@@ -139,26 +143,28 @@ public class Game {
             // Get random enemy ship, this has a 33% chance to be a ship on the front row
             Random random = new Random();
             EnemyShip randomEnemyShip = null;
-            if (enemyShips.size() == 1) {
-                randomEnemyShip = enemyShips.get(0);
-            } else if (enemyShips.size() == 0) {
-                isPaused = true;
-                //TODO endgame
-            } else {
-                randomEnemyShip = enemyShips.get(random.nextInt(enemyShips.size()));
-            }
-            boolean frontRow = true;
-            // Check if chosen ship is on the front row
-            for (EnemyShip enemyShip: enemyShips) {
-                if ((int) randomEnemyShip.getMovementComponent().getxPosition() == (int) enemyShip.getMovementComponent().getxPosition() && (int) randomEnemyShip.getMovementComponent().getyPosition() + 1 == (int) enemyShip.getMovementComponent().getyPosition()) {
-                    frontRow = false;
-                    break;
+            if (enemyShips.size() != 0) {
+                if (enemyShips.size() == 1) {
+                    randomEnemyShip = enemyShips.get(0);
+                } else {
+                    randomEnemyShip = enemyShips.get(random.nextInt(enemyShips.size()));
                 }
-            }
-            // I want a 3.3% chance so 0.1
-            if (frontRow && random.nextDouble() <= 0.05) {
-                EnemyBullet enemyBullet =  abstractFactory.createEnemyBullet(0, bulletSpeed, randomEnemyShip.getMovementComponent().getxPosition(), randomEnemyShip.getMovementComponent().getyPosition() +1, 0, 1);
-                enemyBullets.add(enemyBullet);
+                boolean frontRow = true;
+                // Check if chosen ship is on the front row
+                for (EnemyShip enemyShip: enemyShips) {
+                    if ((int) randomEnemyShip.getMovementComponent().getxPosition() == (int) enemyShip.getMovementComponent().getxPosition() && (int) randomEnemyShip.getMovementComponent().getyPosition() + 1 == (int) enemyShip.getMovementComponent().getyPosition()) {
+                        frontRow = false;
+                        break;
+                    }
+                }
+                // I want a 3.3% chance so 0.1
+                if (frontRow && random.nextDouble() <= 0.05) {
+                    EnemyBullet enemyBullet =  abstractFactory.createEnemyBullet(0, bulletSpeed, randomEnemyShip.getMovementComponent().getxPosition(), randomEnemyShip.getMovementComponent().getyPosition() +1, 0, 1);
+                    enemyBullets.add(enemyBullet);
+                }
+            } else if (enemyBosses.size() == 0) {
+                EnemyBoss enemyBoss = abstractFactory.createEnemyBoss(1, 0, gameCellsX/2, 1, 1, 0, 4, 2);
+                enemyBosses.add(enemyBoss);
             }
         }
     }

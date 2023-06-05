@@ -96,10 +96,6 @@ public class GraphicsContext {
             spriteSheet2 = resizeImage(spriteSheet2, 9 * size, 3 * size);
             heart = resizeImage(heart, size/2, size/2);
             playerBullet = resizeImage(playerBullet, size/3, size/2);
-            /*spriteSheet = resizeImage(spriteSheet, 9 * sizeX, 3 * sizeY);
-            spriteSheet2 = resizeImage(spriteSheet2, 9 * sizeX, 3 * sizeY);
-            heart = resizeImage(heart, sizeX, sizeY);
-            playerBullet = resizeImage(playerBullet, sizeX, sizeY);*/
         } catch(Exception e) {
             e.getStackTrace();
         }

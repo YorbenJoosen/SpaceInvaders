@@ -3,6 +3,7 @@ package Visualisation;
 import Game.AbstractFactory;
 import Game.Input;
 import Game.Player.PlayerShip;
+import Visualisation.Enemy.Java2DEnemyBoss;
 import Visualisation.Enemy.Java2DEnemyBullet;
 import Visualisation.Enemy.Java2DEnemyShip;
 import Visualisation.Player.Java2DPlayerBullet;
@@ -25,6 +26,10 @@ public class Java2DFactory extends AbstractFactory {
     @Override
     public Java2DEnemyBullet createEnemyBullet(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection) {
         return new Java2DEnemyBullet(xSpeed, ySpeed, xPosition, yPosition, xDirection, yDirection, graphicsContext);
+    }
+    @Override
+    public Java2DEnemyBoss createEnemyBoss(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection, int sizeX, int sizeY) {
+        return new Java2DEnemyBoss(xSpeed, ySpeed, xPosition, yPosition, xDirection, yDirection, sizeX, sizeY, graphicsContext);
     }
     @Override
     public void setGameDimensions(int gameCellsX, int gameCellsY) {

@@ -1,5 +1,6 @@
 package Game;
 
+import Game.Enemy.EnemyBoss;
 import Game.Enemy.EnemyBullet;
 import Game.Enemy.EnemyShip;
 import Game.Player.PlayerBullet;
@@ -10,6 +11,7 @@ public abstract class AbstractFactory {
     public abstract EnemyShip createEnemyShip(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection);
     public abstract PlayerBullet createPlayerBullet(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection);
     public abstract EnemyBullet createEnemyBullet(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection);
+    public abstract EnemyBoss createEnemyBoss(double xSpeed, double ySpeed, double xPosition, double yPosition, int xDirection, int yDirection, int sizeX, int sizeY);
     public abstract void setGameDimensions(int gameCellsX, int gameCellsY);
     public abstract void render();
     public abstract Input createInput();

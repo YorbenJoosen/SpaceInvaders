@@ -1,5 +1,6 @@
 package Game.Movement;
 
+import Game.Enemy.EnemyBoss;
 import Game.Enemy.EnemyBullet;
 import Game.Enemy.EnemyShip;
 import Game.Entity;
@@ -78,16 +79,34 @@ public class CollisionSystem {
                 collision = true;
                 dx = -1;
                 break;
-            }
-            else if (xPosition == 0) {
+            } else if (xPosition == 0) {
                 collision = true;
                 dx = 1;
                 break;
             }
-        }
-        if (collision) {
+        } if (collision) {
             for (EnemyShip enemyShip: enemyShips) {
                 enemyShip.getMovementComponent().setxDirection(dx);
+            }
+        }
+    }
+    public void enemyBosses(ArrayList<EnemyBoss> enemyBosses) {
+        boolean collision = false;
+        for (EnemyBoss enemyBoss: enemyBosses) {
+            int xLeftPosition = (int) enemyBoss.getMovementComponent().getxPosition();
+            int xRightPosition = xLeftPosition + enemyBoss.getSizeX() - 1;
+            if (xRightPosition == gameCellsX - 1) {
+                collision = true;
+                dx = -1;
+                break;
+            } else if (xLeftPosition == 0) {
+                collision = true;
+                dx = 1;
+                break;
+            }
+        } if (collision) {
+            for (EnemyBoss enemyBoss: enemyBosses) {
+                enemyBoss.getMovementComponent().setxDirection(dx);
             }
         }
     }
